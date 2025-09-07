@@ -16,6 +16,7 @@ function init() {
   canvas.height = HEIGHT;
   ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("No ctx");
+  ctx.lineWidth = 2;
 
   points3d[0] = new Vec3(-1, 1, -1);
   points3d[1] = new Vec3(1, 1, -1);
@@ -25,15 +26,10 @@ function init() {
   points3d[5] = new Vec3(1, 1, 1);
   points3d[6] = new Vec3(1, -1, 1);
   points3d[7] = new Vec3(-1, -1, 1);
-  if (ctx == null) {
-    throw new Error("no context");
-  }
-  ctx.lineWidth = 2;
   window.requestAnimationFrame(draw);
 }
 
 function draw() {
-  if (canvas === null || ctx === null) return;
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
   const rotation_z = [
@@ -107,8 +103,6 @@ function draw() {
   window.requestAnimationFrame(draw);
 }
 
-window.addEventListener("load", init);
-
 function to_point2d(point3d, projection) {
   const point = [
     [point3d.x],
@@ -166,4 +160,6 @@ class Vec3 {
     this.z = z;
   }
 }
+
+window.addEventListener("load", init);
 
