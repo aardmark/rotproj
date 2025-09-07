@@ -54,19 +54,10 @@ function draw() {
 
   const points2d = [];
   for (let ix = 0; ix < points3d.length; ix++) {
-    let rotated = vec3dmul(points3d[ix], rotation_z);
-    rotated = vec3dmul(rotated, rotation_y);
-    rotated = vec3dmul(rotated, rotation_x);
-    let z = 1 / (distance - rotated.z);
-    const projection = [
-      [z, 0, 0],
-      [0, z, 0],
-    ];
-
-    points2d[ix] = to_point2d(rotated, projection);
-    points2d[ix].mult(200);
+    let rotated = points3d[ix].rotate(rotation_z).rotate(rotation_y).rotate(rotation_x);
+    points2d[ix] = to_point2d(rotated);
     ctx.beginPath();
-    ctx.arc(points2d[ix].x + CENTER_X, points2d[ix].y + CENTER_Y, 1, 0, 2 * Math.PI);
+    ctx.arc(points2d[ix].x, points2d[ix].y, 1, 0, 2 * Math.PI);
     ctx.fill();
   }
 
@@ -91,25 +82,20 @@ function draw() {
   window.requestAnimationFrame(draw);
 }
 
-function to_point2d(point3d, projection) {
+function to_point2d(point3d) {
+  let z = 1 / (distance - point3d.z);
+  const projection = [
+    [z, 0, 0],
+    [0, z, 0],
+  ];
+
   const point = [
     [point3d.x],
     [point3d.y],
     [point3d.z]
   ];
-  const multiplied = matmul(projection, point) || [];
-  return new Vec2(multiplied[0][0], multiplied[1][0]);
-}
-
-function vec3dmul(vec3d, matrix) {
-  const point = [
-    [vec3d.x],
-    [vec3d.y],
-    [vec3d.z]
-  ];
-
-  const multiplied = matmul(matrix, point);
-  return new Vec3(multiplied[0][0], multiplied[1][0], multiplied[2][0]);
+  const multiplied = matmul(projection, point);
+  return new Vec2((multiplied[0][0] * 200) + CENTER_X, (multiplied[1][0] * 200) + CENTER_Y);
 }
 
 function matmul(matrix, point) {
@@ -147,26 +133,37 @@ class Vec3 {
     this.y = y;
     this.z = z;
   }
+
+  rotate(matrix) {
+    const point = [
+      [this.x],
+      [this.y],
+      [this.z]
+    ];
+
+    const multiplied = matmul(matrix, point);
+    return new Vec3(multiplied[0][0], multiplied[1][0], multiplied[2][0]);
+  }
 }
 
 function join_the_dots(vecs2) {
   ctx.beginPath();
-  ctx.moveTo(vecs2[0].x + CENTER_X, vecs2[0].y + CENTER_Y);
-  ctx.lineTo(vecs2[1].x + CENTER_X, vecs2[1].y + CENTER_Y);
-  ctx.lineTo(vecs2[2].x + CENTER_X, vecs2[2].y + CENTER_Y);
-  ctx.lineTo(vecs2[3].x + CENTER_X, vecs2[3].y + CENTER_Y);
-  ctx.lineTo(vecs2[0].x + CENTER_X, vecs2[0].y + CENTER_Y);
-  ctx.lineTo(vecs2[4].x + CENTER_X, vecs2[4].y + CENTER_Y);
-  ctx.lineTo(vecs2[5].x + CENTER_X, vecs2[5].y + CENTER_Y);
-  ctx.lineTo(vecs2[6].x + CENTER_X, vecs2[6].y + CENTER_Y);
-  ctx.lineTo(vecs2[7].x + CENTER_X, vecs2[7].y + CENTER_Y);
-  ctx.lineTo(vecs2[4].x + CENTER_X, vecs2[4].y + CENTER_Y);
-  ctx.moveTo(vecs2[1].x + CENTER_X, vecs2[1].y + CENTER_Y);
-  ctx.lineTo(vecs2[5].x + CENTER_X, vecs2[5].y + CENTER_Y);
-  ctx.moveTo(vecs2[2].x + CENTER_X, vecs2[2].y + CENTER_Y);
-  ctx.lineTo(vecs2[6].x + CENTER_X, vecs2[6].y + CENTER_Y);
-  ctx.moveTo(vecs2[3].x + CENTER_X, vecs2[3].y + CENTER_Y);
-  ctx.lineTo(vecs2[7].x + CENTER_X, vecs2[7].y + CENTER_Y);
+  ctx.moveTo(vecs2[0].x, vecs2[0].y);
+  ctx.lineTo(vecs2[1].x, vecs2[1].y);
+  ctx.lineTo(vecs2[2].x, vecs2[2].y);
+  ctx.lineTo(vecs2[3].x, vecs2[3].y);
+  ctx.lineTo(vecs2[0].x, vecs2[0].y);
+  ctx.lineTo(vecs2[4].x, vecs2[4].y);
+  ctx.lineTo(vecs2[5].x, vecs2[5].y);
+  ctx.lineTo(vecs2[6].x, vecs2[6].y);
+  ctx.lineTo(vecs2[7].x, vecs2[7].y);
+  ctx.lineTo(vecs2[4].x, vecs2[4].y);
+  ctx.moveTo(vecs2[1].x, vecs2[1].y);
+  ctx.lineTo(vecs2[5].x, vecs2[5].y);
+  ctx.moveTo(vecs2[2].x, vecs2[2].y);
+  ctx.lineTo(vecs2[6].x, vecs2[6].y);
+  ctx.moveTo(vecs2[3].x, vecs2[3].y);
+  ctx.lineTo(vecs2[7].x, vecs2[7].y);
   ctx.stroke();
   ctx.closePath();
 }
