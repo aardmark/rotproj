@@ -6,6 +6,7 @@ const points3d = [];
 let canvas;
 let ctx;
 let angle = 0;
+let use_distance = false;
 let distance = 3;
 let distance_direction = 0;
 
@@ -32,6 +33,7 @@ function init() {
 function draw() {
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
+  // naming is bad, this rotates *around* the axis
   const rotation_z = [
     [Math.cos(angle), -(Math.sin(angle)), 0],
     [Math.sin(angle), Math.cos(angle), 0],
@@ -68,38 +70,24 @@ function draw() {
     ctx.fill();
   }
 
-  ctx.beginPath();
-  ctx.moveTo(points2d[0].x + CENTER_X, points2d[0].y + CENTER_Y);
-  ctx.lineTo(points2d[1].x + CENTER_X, points2d[1].y + CENTER_Y);
-  ctx.lineTo(points2d[2].x + CENTER_X, points2d[2].y + CENTER_Y);
-  ctx.lineTo(points2d[3].x + CENTER_X, points2d[3].y + CENTER_Y);
-  ctx.lineTo(points2d[0].x + CENTER_X, points2d[0].y + CENTER_Y);
-  ctx.lineTo(points2d[4].x + CENTER_X, points2d[4].y + CENTER_Y);
-  ctx.lineTo(points2d[5].x + CENTER_X, points2d[5].y + CENTER_Y);
-  ctx.lineTo(points2d[6].x + CENTER_X, points2d[6].y + CENTER_Y);
-  ctx.lineTo(points2d[7].x + CENTER_X, points2d[7].y + CENTER_Y);
-  ctx.lineTo(points2d[4].x + CENTER_X, points2d[4].y + CENTER_Y);
-  ctx.moveTo(points2d[1].x + CENTER_X, points2d[1].y + CENTER_Y);
-  ctx.lineTo(points2d[5].x + CENTER_X, points2d[5].y + CENTER_Y);
-  ctx.moveTo(points2d[2].x + CENTER_X, points2d[2].y + CENTER_Y);
-  ctx.lineTo(points2d[6].x + CENTER_X, points2d[6].y + CENTER_Y);
-  ctx.moveTo(points2d[3].x + CENTER_X, points2d[3].y + CENTER_Y);
-  ctx.lineTo(points2d[7].x + CENTER_X, points2d[7].y + CENTER_Y);
-  ctx.stroke();
-  ctx.closePath();
+  join_the_dots(points2d);
 
   angle += 0.03;
-  if (distance_direction) {
-    distance += 0.1;
-    if (distance >= 30) {
-      distance_direction = 0;
-    }
-  } else {
-    distance -= 0.1;
-    if (distance <= 2) {
-      distance_direction = 1;
+
+  if (use_distance) {
+    if (distance_direction) {
+      distance += 0.1;
+      if (distance >= 30) {
+        distance_direction = 0;
+      }
+    } else {
+      distance -= 0.1;
+      if (distance <= 2) {
+        distance_direction = 1;
+      }
     }
   }
+
   window.requestAnimationFrame(draw);
 }
 
@@ -159,6 +147,28 @@ class Vec3 {
     this.y = y;
     this.z = z;
   }
+}
+
+function join_the_dots(vecs2) {
+  ctx.beginPath();
+  ctx.moveTo(vecs2[0].x + CENTER_X, vecs2[0].y + CENTER_Y);
+  ctx.lineTo(vecs2[1].x + CENTER_X, vecs2[1].y + CENTER_Y);
+  ctx.lineTo(vecs2[2].x + CENTER_X, vecs2[2].y + CENTER_Y);
+  ctx.lineTo(vecs2[3].x + CENTER_X, vecs2[3].y + CENTER_Y);
+  ctx.lineTo(vecs2[0].x + CENTER_X, vecs2[0].y + CENTER_Y);
+  ctx.lineTo(vecs2[4].x + CENTER_X, vecs2[4].y + CENTER_Y);
+  ctx.lineTo(vecs2[5].x + CENTER_X, vecs2[5].y + CENTER_Y);
+  ctx.lineTo(vecs2[6].x + CENTER_X, vecs2[6].y + CENTER_Y);
+  ctx.lineTo(vecs2[7].x + CENTER_X, vecs2[7].y + CENTER_Y);
+  ctx.lineTo(vecs2[4].x + CENTER_X, vecs2[4].y + CENTER_Y);
+  ctx.moveTo(vecs2[1].x + CENTER_X, vecs2[1].y + CENTER_Y);
+  ctx.lineTo(vecs2[5].x + CENTER_X, vecs2[5].y + CENTER_Y);
+  ctx.moveTo(vecs2[2].x + CENTER_X, vecs2[2].y + CENTER_Y);
+  ctx.lineTo(vecs2[6].x + CENTER_X, vecs2[6].y + CENTER_Y);
+  ctx.moveTo(vecs2[3].x + CENTER_X, vecs2[3].y + CENTER_Y);
+  ctx.lineTo(vecs2[7].x + CENTER_X, vecs2[7].y + CENTER_Y);
+  ctx.stroke();
+  ctx.closePath();
 }
 
 window.addEventListener("load", init);
