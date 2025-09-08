@@ -9,6 +9,7 @@ let angle = 0;
 let use_distance = false;
 let distance = 3;
 let distance_direction = 0;
+let show_coords = true;
 
 function init() {
   canvas = document.getElementById("canvas");
@@ -18,6 +19,7 @@ function init() {
   ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("No ctx");
   ctx.lineWidth = 2;
+  ctx.font = "16px serif";
 
   points3d[0] = new Vec3(-1, 1, -1);
   points3d[1] = new Vec3(1, 1, -1);
@@ -59,11 +61,15 @@ function draw() {
     ctx.beginPath();
     ctx.arc(points2d[ix].x, points2d[ix].y, 1, 0, 2 * Math.PI);
     ctx.fill();
+    if (show_coords) {
+      ctx.fillText(`(${Math.trunc(points2d[ix].x)}, ${Math.trunc(points2d[ix].y)})`, points2d[ix].x + 10, points2d[ix].y - 10);
+    }
+
   }
 
   join_the_dots(points2d);
 
-  angle += 0.03;
+  angle += 0.01;
 
   if (use_distance) {
     if (distance_direction) {
